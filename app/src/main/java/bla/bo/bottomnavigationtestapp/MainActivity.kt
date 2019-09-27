@@ -1,10 +1,10 @@
 package bla.bo.bottomnavigationtestapp
 
 import android.os.Bundle
-import android.transition.AutoTransition
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.transition.Fade
 import bla.bo.bottomnavigationtestapp.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -38,9 +38,13 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val menuView = getChildAt(0) as BottomNavigationMenuView
         with(menuView::class.java.getDeclaredField("set")) {
             isAccessible = true
-            set(menuView, androidx.transition.AutoTransition().apply {
-                duration = 0L
-            })
+            val transitionSet = (get(menuView) as androidx.transition.AutoTransition).apply {
+                for (i in transitionCount downTo 0) {
+                    val transition = getTransitionAt(i) as? Fade ?: continue
+                    removeTransition(transition)
+                }
+            }
+            set(menuView, transitionSet)
         }
     }
 }
